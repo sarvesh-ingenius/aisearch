@@ -1,24 +1,4 @@
 table_cte_mapper = {
-    'bigquery_onecard_events' : """bigquery_onecard_events AS (
-    SELECT
-        CAST(FROM_UNIXTIME(event_timestamp/1000000) AS TIMESTAMP) AS event_timestamp,
-        DATE_PARSE(event_date, '%Y%m%d') AS event_date,
-        event_name,
-        CAST(user_id AS BIGINT) AS customer_no,
-        platform,
-        CASE
-            WHEN app_info.id = 'com.creditcard.onecard' THEN 'onecard'
-            WHEN app_info.id = 'tech.fplabs.score' THEN 'onescore'
-            ELSE NULL
-        END AS app_name,
-        app_info.version AS app_version,
-        device.mobile_brand_name AS mobile_brand,
-        device.mobile_model_name AS mobile_model
-    FROM
-        -- fpl_event.bigquery_onecard_events
-        fpl_ds_analytics.sk_sohel_bq_events
-        -- ,UNNEST(event_params) AS ep
-)""",
     'score_event_tracker' : """score_event_tracker AS (
     SELECT
         created_at AS event_timestamp,

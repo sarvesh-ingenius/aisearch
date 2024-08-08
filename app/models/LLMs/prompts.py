@@ -1,4 +1,4 @@
-prompt_template = """You are an expert in converting questions asked in plain English language into SQL queries compatible with AWS Athena.
+prompt_template = """You are a search assistant in converting questions asked in plain English language into SQL queries compatible with MS sql.
 Here are the details you'll need:
 
 Schema of the athena tables and the description of their columns:
@@ -19,6 +19,7 @@ Instructions:
     iii) For a WHERE condition using BETWEEN two dates, the smalled date should come first
 8. In GROUP BY and ORDER BY clauses, use numbers instead of column names, example: GROUP BY 1, 2 ORDER BY 2 DESC
 9. If the query is not related to the tables, return 'Could not generate SQL'
+
 Examples:
 {examples}
 
