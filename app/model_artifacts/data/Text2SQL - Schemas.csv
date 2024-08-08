@@ -1,0 +1,109 @@
+Team,Table,Schema
+onboarding,bigquery_onecard_events,"-- frontend clicks and events
+CREATE TABLE bigquery_onecard_events(
+    event_timestamp TIMESTAMP, -- Timestamp of the event
+    event_name VARCHAR, -- Name of the event
+    customer_no BIGINT, -- Unique id of the customer
+    platform VARCHAR, -- Name of the platform: (ANDROID, IOS)
+    app_name VARCHAR, -- Name of the application the event belongs to: (onecard, onescore)
+    app_version VARCHAR, -- Version of application
+    mobile_brand VARCHAR, -- Brand of the mobile phone
+    mobile_model VARCHAR -- Model of the mobile phone
+)
+/*
+3 rows from bigquery_onecard_events table:
+row_number        event_timestamp        event_date        event_name        customer_no        platform        app_name        app_version        mobile_brand        mobile_model
+1        2024-06-20 06:55:21        2024-06-20        Action_AddNewAddress        3394407836015395856        ANDROID        onecard        3.18        Realme        RMX3771
+2        2024-06-24 09:18:51        2024-06-24        Action_AutoPay        3083392141922141560        ANDROID        onecard        3.18        Vivo        V2142
+3        2021-09-01 02:03:14        2021-09-01        Action_AadharEkycGetOTP        2652825309644063824        ANDROID        onecard        1.88        OnePlus        HD1901
+*/"
+onboarding,score_event_tracker,"-- backend events
+CREATE TABLE score_event_tracker(
+    event_timestamp TIMESTAMP, -- Timestamp of the event
+    customer_no BIGINT, -- Unique id of the customer
+    tenant_id VARCHAR, -- Bank id or Tenant id of the customer
+    primary_event_name VARCHAR, -- Name of the primary event
+    secondary_event_name VARCHAR, -- Name of the secondary event
+    tertiary_event_name VARCHAR, -- Name of the tertiary event
+    status VARCHAR, -- Status of the event: (SUCCESS, PENDING, FAILED, etc)
+    product_code VARCHAR, -- Product code: (OC, OCL, PL, OCL_NO_FD)
+    journey_stage VARCHAR, -- Journey stage of the customer
+    event_details VARCHAR -- Details about the event
+)
+
+/*
+3 rows from score_event_tracker table:
+row_number        event_timestamp        customer_no        bank_id        primary_event_name        secondary_event_name        tertiary_event_name        status        product_code        journey_stage        event_details
+1        2023-12-14 14:34:34.650000+00:00        3145741378915403270        9916649609        KYC        AADHAAR_EKYC_WEB        EKYC_WEB_GENERATE_SESSION        SUCCESS        OCL        ONBOARDING        Session generated successfully
+2        2024-01-14 17:34:50.832000+00:00        3280224032443598450        None        UNDERWRITING        REPORT_FETCH        EXPERIAN        SUCCESS        None        UNDERWRITING        None
+3        2024-06-28 03:31:00.627000+00:00        3400114617446302924        None        UNDERWRITING        PAN_VALIDATION        None        SUCCESS        None        UNDERWRITING        Pan verified
+*/"
+onboarding,all_bank_vc,"-- virtual card activation / vc / vca for different banks
+CREATE TABLE all_bank_vc(
+    customer_no BIGINT, -- Unique id of the customer
+    registration_timestamp TIMESTAMP, -- Timestamp of registration of customer
+    credit_limit DECIMAL, -- Credit limit assigned to customer
+    bank_name VARCHAR, -- Name of the bank assigned to customer: (BOB, FED_SECURED, SIB_UNSECURED, etc)
+    product_type VARCHAR, -- Type of product assigned to customer: (Unsecured, Secured, Partially_secured)
+    final_channel VARCHAR, -- Channel which user came from: (REFERRAL, ONECARD, ONECARD_WEB, ADD_ON, etc)
+    status VARCHAR, -- Status of the card: (Activated, Deactivated)
+    virtual_activation_date DATE -- Date of activation of virtual card
+)
+
+/*
+3 rows from all_bank_vc
+row_number	realid	regis_date	credit_limit	bank_name	product_type	final_channel	status	virtual_activation_date
+1	2731331221710702141	2021-12-18 09:34:52.718000	5500	SBM_SECURED	Secured	REFERRAL	Deactivated	2022-05-01
+2	2716828511816910625	2021-11-28 09:20:39.281000	250000	BOB	Unsecured	ONECARD	Activated	2022-03-28
+3	3247223389223389098	2023-12-05 02:13:21.010000	5000	FED_SECURED	Secured	ONECARD	Activated	2023-12-20
+*/"
+tbd,fpl_ds_onboarding.cerebro_l1_customer_final_decision,"-- credit card offered to the user
+CREATE TABLE fpl_ds_onboarding.cerebro_l1_customer_final_decision (
+    created_at TIMESTAMP, -- Timestamp when the credit card offer was generated
+    realid INTEGER, -- Unique ID for each customer
+    bankid INTEGER, -- Bank ID for which the offer was generated
+    _product_code VARCHAR(50), -- Product code offered to the customer
+    final_limit_assigned DECIMAL(10,2), -- Final Credit Limit assigned to the user
+    final_decision VARCHAR(50) -- Final Decision made by the cerebro system regarding the customer
+);"
+tbd,fpl_mis.cibil_summary,"-- credit bureau (CIBIL) report of the customer.
+CREATE TABLE fpl_mis.cibil_summary (
+    created_at TIMESTAMP, -- Timestamp on which the credit bureau (cibil) record for the customer was pulled
+    customer_number INTEGER, -- Unique ID for each customer
+    risk_score INTEGER, -- CIBIL (credit) score for the user
+    thick_or_thin VARCHAR(50), -- Whether the user is a Thick credit user or Thin credit user
+    age INTEGER, -- Age of the customer
+    number_of_enquiries INTEGER, -- Number of enquiries made by the customer
+    num_of_active_credit_cards INTEGER, -- Number of active credit cards currently being held by the customer
+    maximum_limit_from_active_cards  DECIMAL(10, 2), -- Maximum credit limit from the active credit cards held by the customer
+    avg_utilization_on_active_cards DECIMAL(8, 6), -- Average credit utilization done by the customer on the active credit cards
+    number_of_risky_accounts INTEGER, -- Number of risky credit accounts held by the customer
+);"
+tbd,fpl_ds_onboarding.bofu_l1_score_customer,"-- registration and demographics of the user
+CREATE TABLE fpl_ds_onboarding.bofu_l1_score_customer(
+    customer_no BIGINT, -- Unique id of the customer
+    created_at TIMESTAMP, -- Registration timestamp of the customer
+    marital_status VARCHAR(50), -- Marital status of customer
+    gender VARCHAR(50), -- Gender of the customer, can be upper or lower case
+    date_of_birth DATE, -- Date of birth of the customer
+    annual_income VARCHAR(50), -- Annual income of the customer
+    channel VARCHAR(50), -- Acquisition channel of the customer
+    state VARCHAR(50), -- Which state the user belongs to
+    city VARCHAR(50), -- City of the user
+    annual_income VARCHAR(50), -- Annual income of the customer
+    annual_income VARCHAR(50), -- Annual income of the customer
+    pincode VARCHAR(50), -- Pincode of the user
+);"
+tbd,fpl_central.cerebro_geo_spoc_data_v3,"-- geo location of users
+CREATE TABLE fpl_central.cerebro_geo_spoc_data_v3(
+    updated_at TIMESTAMP, -- updation Timestamp of location of user
+    customer_number VARCHAR(50), -- Unique ID for each customer
+    city VARCHAR(50), -- Product code offered to the customer
+    pin_code VARCHAR(50) -- Pincode of customer location
+);"
+tbd,fpl_workspace.pincode_mapper2,"-- pincode serviceability flag
+CREATE TABLE fpl_workspace.pincode_mapper2(
+    pin_code BIGINT, -- pincode
+    oc_unsecured VARCHAR(50), -- is the pincode serviceable, 'Yes' or 'No'
+);"
+tbd,,
