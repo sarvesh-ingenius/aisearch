@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sequel Genie</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        body {
+            background-color: white;
+            color: black;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            font-family: 'Trebuchet MS';
+            flex-direction: column; /* Added for vertical stacking of content */
+        }
+        .card-custom {
+            border-radius: 30px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+        }
+        .form-control, .btn {
+            width: 100%;
+        }
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .title-custom {
+            font-size: 1rem; /* Custom font size for the title */
+            margin: 0; /* Ensure no extra margin */
+        }
+        .btn-custom {
+            font-size: 0.7rem; /* Custom font size for the button */
+            background-color: #1893f7;
+            border: none !important;
+        }
+        .btn-custom:hover {
+            background-color: #007ade !important;
+        }
+        .custom-hr {
+            height: 1px;
+            background: black;
+            width: 100%;
+            margin: 10px 0; /* Adjust margin as needed */
+        }
+        .freehandmodelabel {
+            font-size: 0.75rem;
+            /* display: flex; */
+            align-items: center;
+            /* margin-left: 2px; */
+        }
+        .form-check {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Ensure proper spacing */
+            padding : 0 !important;
+        }
+
+
+        .form-select {
+            width: auto; /* Set to auto for appropriate width */
+            /*padding: 0.25rem 0.5rem; /* Adjust padding for size consistency */
+            font-size: 0.75rem; /* Adjust font size for consistency */
+        }
+        .form-select:focus {
+            /* border: 1px solid black !important; */
+            /* outline: 3px solid #1893f7!important; */
+            box-shadow: 0 0 0 0 red !important;
+        }
+
+
+        .question-textbox-label {
+            font-size: 15px;
+        }
+        .question-textbox {
+            font-size: 15px;
+        }
+        .mb-3 {
+            margin-bottom: 0 !important; /* Remove margin-bottom */ 
+        }
+        .question-textbox:focus {
+            border: 2px solid #1893f7 !important;
+            outline: none !important;
+            box-shadow: 0 0 0 0 red !important;
+        }
+        .toggle-btn:focus {
+            border: 1px solid black !important;
+            outline: 3px solid #1893f7!important;
+            box-shadow: 0 0 0 0 red !important;
+        }
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 150px; /* Adjust the size as needed */
+        }
+        footer {
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            background-color: black;
+            position: absolute;
+            bottom: 0;
+            color: white;
+            display: flex;
+            justify-content: space-between; /* Add space between items */
+            padding: 10px 20px; /* Add padding for layout */
+        }
+        .footer-content {
+            font-size: 0.8rem;
+        }
+        .disclaimer {
+            font-size: 0.8rem; /* Smaller font size for the disclaimer */
+            text-align: left; /* Align disclaimer to the left */
+        }
+        .feedback {
+            font-size: 0.8rem;
+            text-align: right; /* Align feedback to the right */
+        }
+        .tooltip-icon {
+            font-size: 1rem;
+            margin-left: 5px;
+            cursor: pointer;
+            vertical-align: middle; /* Ensure the icon aligns with the text */
+        }
+        /* Adjusted tooltip style */
+        .tooltip-inner {
+            font-size: 15px; /* Font size for tooltip text */
+            max-width: 400px; /* Max width for the tooltip */
+            padding: 8px 12px; /* Padding for the tooltip */
+            white-space: pre-wrap; /* Allow preformatted text and wrap */
+            text-align: left;
+        }
+
+        /* Animation for the spinner loader */
+        .loader {
+            border: 8px solid rgba(0, 0, 0, 0.1);
+            border-top: 8px solid #007ade;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 1s linear infinite;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+        }
+
+        @keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Faded overlay for the rest of the page */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white */
+            z-index: 999; /* Higher z-index than loader */
+            display: none; /* Initially hidden */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="loader"></div>
+    <div class="overlay"></div>
+    <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="logo">
+    <div class="card-custom shadow-lg">
+        <form id="myForm" action="{{ url_for('query_gen_bp.process_question') }}" method="POST">
+            <!-- First Row -->
+            <div class="title-container">
+                <h1 class="title-custom">Query Data</h1>
+                <i class="fas fa-question-circle tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="top" 
+                    data-bs-html='true'
+                    title="Describe what you want to query in plain English.<br>For accurate results,<br>- Be as clear as possible and avoid ambiguity<br>- Do not make spelling mistakes<br>- Mention column and table names whenever possible<br>- Beta mode is for advanced queries and is less accurate"></i>
+            </div>
+            <hr class="custom-hr">
+            <!-- Second Row -->
+            <div class="form-check form-switch">
+                <select class="form-select form-select-sm" aria-label=".form-select-sm example" name="team">
+                    <option selected value="onboarding">Onboarding </option>
+
+                    <option value="repayments" disabled>Repayments</option>
+                    <option value="portfolio" disabled>Portfolio</option>
+                    <option value="fraud" disabled>Fraud</option>
+
+                    <!-- <option value="repayments" disabled>Repayments</option>
+                    <option value="portfolio" disabled>Portfolio</option>
+                    <option value="fraud" disabled>Fraud</option> -->
+                </select>
+                <div>
+                    <input class="form-check-input toggle-btn" type="checkbox" role="switch" id="freehandmode" name="freehandmode">
+                    <label class="form-check-label freehandmodelabel" for="freehandmode">Beta mode</label>
+                </div>
+            </div>
+            <hr class="custom-hr">
+            <!-- Third Row -->
+            <div class="mb-3">
+                <span class="question-textbox-label">Your question goes here:</span>
+                <textarea name="query" class="form-control mb-2 question-textbox" rows="6" placeholder="Customers who clicked on 'falana' event within last 2 weeks" required></textarea>
+                <button type="submit" class="btn btn-secondary btn-custom"><i class="fa-solid fa-feather"></i> Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <footer>
+        <div class="disclaimer">
+            Disclaimer: Output can be incorrect!
+        </div>
+        <div class="feedback">
+            Feedback: <a href="mailto:sohel.shaikh@fplabs.tech">sohel.shaikh@fplabs.tech</a>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to show loader and overlay
+            function showLoader() {
+                $(".loader").show();
+                $(".overlay").show();
+            }
+
+            // Function to hide loader and overlay
+            function hideLoader() {
+                $(".loader").hide();
+                $(".overlay").hide();
+            }
+
+            // Hide loader and overlay on document load
+            hideLoader();
+
+            // Show loader and overlay when form is submitted
+            $("#myForm").submit(function(event) {
+                showLoader();
+            });
+
+            // Hide loader and overlay when navigating back from result.html
+            $(window).on('popstate', function() {
+                hideLoader();
+            });
+
+            // Alternative approach: detect browser back button press
+            window.onpageshow = function(event) {
+                if (event.persisted) {
+                    hideLoader();
+                }
+            };
+        });
+
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sequel Genie</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        body {
+            background-color: white;
+            color: black;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            font-family: 'Trebuchet MS';
+            flex-direction: column; /* Added for vertical stacking of content */
+        }
+        .card-custom {
+            border-radius: 30px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+        }
+        .form-control, .btn {
+            width: 100%;
+        }
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .title-custom {
+            font-size: 1rem; /* Custom font size for the title */
+            margin: 0; /* Ensure no extra margin */
+        }
+        .btn-custom {
+            font-size: 0.7rem; /* Custom font size for the button */
+            background-color: #81c869;
+            border: none !important;
+        }
+        .btn-custom:hover {
+            background-color: #6ba856 !important;
+        }
+        .btn-custom1 {
+            font-size: 0.7rem; /* Custom font size for the button */
+            background-color: #1893f7;
+            border: none !important;
+        }
+        .btn-custom1:hover {
+            background-color: #007ade !important;
+        }
+        .custom-hr {
+            height: 1px;
+            background: black;
+            width: 100%;
+            margin: 10px 0; /* Adjust margin as needed */
+        }
+        .freehandmodelabel {
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+        .form-check {
+            display: flex;
+            align-items: center;
+        }
+        .question-textbox-label {
+            font-size: 15px;
+        }
+        .question-textbox {
+            font-size: 15px;
+        }
+
+        .query-textbox-label {
+            font-size: 15px;
+        }
+        .query-textbox {
+            font-size: 15px;
+            border: 2px solid {{box_color}} !important;
+            outline: none !important;
+            box-shadow: 0 0 0 0 red !important;
+        }
+
+        .mb-3 {
+            margin-bottom: 0 !important; /* Remove margin-bottom */ 
+        }
+        .question-textbox:focus {
+            border: 2px solid #1893f7 !important;
+            outline: none !important;
+            box-shadow: 0 0 0 0 red !important;
+        }
+        .toggle-btn:focus {
+            border: 1px solid black !important;
+            outline: 3px solid #1893f7!important;
+            box-shadow: 0 0 0 0 red !important;
+        }
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 150px; /* Adjust the size as needed */
+        }
+        footer {
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            background-color: black;
+            position: absolute;
+            bottom: 0;
+            color: white;
+            display: flex;
+            justify-content: space-between; /* Add space between items */
+            padding: 10px 20px; /* Add padding for layout */
+        }
+        .footer-content {
+            font-size: 0.8rem;
+        }
+        .disclaimer {
+            font-size: 0.8rem; /* Smaller font size for the disclaimer */
+            text-align: left; /* Align disclaimer to the left */
+        }
+        .feedback {
+            font-size: 0.8rem;
+            text-align: right; /* Align feedback to the right */
+        }
+        .tooltip-icon {
+            font-size: 1rem;
+            margin-left: 5px;
+            cursor: pointer;
+            vertical-align: middle; /* Ensure the icon aligns with the text */
+        }
+        /* Adjusted tooltip style */
+        .tooltip-inner {
+            font-size: 15px; /* Font size for tooltip text */
+            max-width: 400px; /* Max width for the tooltip */
+            padding: 8px 12px; /* Padding for the tooltip */
+            white-space: pre-wrap; /* Allow preformatted text and wrap */
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="logo">
+    <div class="card-custom shadow-lg">
+            <!-- First Row -->
+            <div class="title-container">
+                <h1 class="title-custom">Output</h1>
+            </div>
+            <hr class="custom-hr">
+            <!-- Second Row -->
+            <div class="mb-3">
+                <span class="question-textbox-label">Your question:</span>
+                <textarea name="query" class="form-control mb-2 question-textbox" rows="6" disabled>{{question}}</textarea>
+            <hr class="custom-hr">
+                <span class="query-textbox-label">{{label}}:</span>
+                <textarea name="query" class="form-control mb-2 query-textbox user-select-all" rows="6" disabled>{{query}}</textarea>
+                <div class="d-flex gap-2"> <!-- Flex container with gap between buttons -->
+                    <!-- <button type="button" class="btn btn-secondary btn-custom1" onclick="{{ url_for('query_gen_bp.welcome') }}"><i class="fa-solid fa-rotate-right"></i> Try again</button> -->
+                    <a class="btn btn-secondary btn-custom1" href="{{ url_for('query_gen_bp.welcome') }}"><i class="fa-solid fa-rotate-right"></i> Try again</a>
+                    <button type="button" class="btn btn-secondary btn-custom" onclick="copyToClipboard()"><i class="fa-solid fa-copy"></i> Copy</button>
+                </div>
+            </div>
+    </div>
+    <footer>
+        <div class="disclaimer">
+            Disclaimer: Output can be incorrect!
+        </div>
+        <div class="feedback">
+            Feedback: <a href="mailto:sohel.shaikh@fplabs.tech">sohel.shaikh@fplabs.tech</a>
+        </div>
+    </footer>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+const copyToClipboard = async () => {
+    const button = document.querySelector('.btn-custom'); // Adjust selector based on your button class or ID
+    try {
+        const element = document.querySelector(".user-select-all");
+        await navigator.clipboard.writeText(element.textContent);
+
+        // Toggle icon
+        const icon = button.querySelector('i');
+        if (icon.classList.contains('fa-copy')) {
+            icon.classList.remove('fa-copy');
+            icon.classList.add('fa-check-to-slot');
+        } else {
+            icon.classList.remove('fa-check-to-slot');
+            icon.classList.add('fa-copy');
+        }
+
+        // Optional: Provide feedback or perform additional actions upon successful copy
+    } catch (error) {
+        console.error("Failed to copy to clipboard:", error);
+        // Optional: Handle and display the error to the user
+    }
+};
+    </script>
+</body>
+</html>
